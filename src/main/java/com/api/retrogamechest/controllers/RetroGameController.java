@@ -51,7 +51,7 @@ public class RetroGameController {
     public  ResponseEntity<Page<RetroGameModel>> getAllRetroGames(@PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
         Page<RetroGameModel> retroGameList = retroGameService.findAll(pageable);
         if (retroGameList.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
         return ResponseEntity.status(HttpStatus.OK).body(retroGameService.findAll(pageable));
     }
