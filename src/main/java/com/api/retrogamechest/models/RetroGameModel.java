@@ -1,6 +1,7 @@
 package com.api.retrogamechest.models;
 
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -11,7 +12,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "TB_RETRO_GAME")
-public class RetroGameModel implements Serializable {
+public class RetroGameModel extends RepresentationModel<RetroGameModel> implements Serializable {
     private static final long serialVersionUID = 1l;
 
     @Id
