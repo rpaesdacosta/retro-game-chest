@@ -19,6 +19,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 @RestController
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RequestMapping("/retro-game")
@@ -43,8 +46,12 @@ public class RetroGameController {
         Optional<RetroGameModel> retroGameModelOptional = retroGameService.findById(id);
         if (!retroGameModelOptional.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Retro Game not found.");
+        } else {
+            RetroGameDto retroGameDto = new RetroGameDto();
+            BeanUtils.copyProperties(retroGameModelOptional.get(), retroGameDto);
+            retroGameModelOptional.get().add(linkTo(methodOn(RetroGameController.class).getAllRetroGames(Pageable.ofSize(10).withPage(0))).withRel("Retro Game Full List"));
+            return ResponseEntity.status(HttpStatus.OK).body(retroGameModelOptional.get());
         }
-        return ResponseEntity.status(HttpStatus.OK).body(retroGameModelOptional.get());
     }
 
     @GetMapping
@@ -52,8 +59,12 @@ public class RetroGameController {
         Page<RetroGameModel> retroGameList = retroGameService.findAll(pageable);
         if (retroGameList.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } else {
+            for (RetroGameModel retroGame : retroGameList) {
+                retroGame.add(linkTo(methodOn(RetroGameController.class).getOneRetroGame(retroGame.getId())).withSelfRel());
+            }
         }
-        return ResponseEntity.status(HttpStatus.OK).body(retroGameService.findAll(pageable));
+        return ResponseEntity.status(HttpStatus.OK).body(retroGameList);
     }
 
     @DeleteMapping("/{id}")
