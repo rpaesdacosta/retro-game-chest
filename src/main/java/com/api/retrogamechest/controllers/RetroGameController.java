@@ -5,6 +5,7 @@ import com.api.retrogamechest.models.RetroGameModel;
 import com.api.retrogamechest.services.RetroGameServiceImpl;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -18,6 +19,7 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -55,8 +57,8 @@ public class RetroGameController {
     }
 
     @GetMapping
-    public  ResponseEntity<Page<RetroGameModel>> getAllRetroGames(@PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
-        Page<RetroGameModel> retroGameList = retroGameService.findAll(pageable);
+    public  ResponseEntity<Page<RetroGameModel>> getAllRetroGames(@PageableDefault(page = 0, size = 10) Pageable pageable) {
+        List<RetroGameModel> retroGameList = retroGameService.findAll();
         if (retroGameList.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } else {
@@ -64,7 +66,15 @@ public class RetroGameController {
                 retroGame.add(linkTo(methodOn(RetroGameController.class).getOneRetroGame(retroGame.getId())).withSelfRel());
             }
         }
-        return ResponseEntity.status(HttpStatus.OK).body(retroGameList);
+
+        List<RetroGameModel> pageList = retroGameList.stream()
+                .skip(pageable.getPageSize() * pageable.getPageNumber())
+                .limit(pageable.getPageSize())
+                .collect(Collectors.toList());
+
+        Page retroGamePage = new PageImpl<>(pageList, pageable, retroGameList.size());
+
+        return ResponseEntity.status(HttpStatus.OK).body(retroGamePage);
     }
 
     @DeleteMapping("/{id}")
@@ -74,7 +84,7 @@ public class RetroGameController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Retro Game not found.");
         }
         retroGameService.delete(id);
-        return ResponseEntity.status(HttpStatus.OK).body("Retro Game deleted successfully.");
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
     }
 
     @PutMapping("/{id}")

@@ -41,6 +41,8 @@ public class RetroGameModel extends RepresentationModel<RetroGameModel> implemen
         return id;
     }
 
+    public void setId(UUID id) { this.id = id; }
+
     public String getName() {
         return name;
     }
@@ -77,9 +79,7 @@ public class RetroGameModel extends RepresentationModel<RetroGameModel> implemen
         return releaseDate;
     }
 
-    public void setReleaseDate(LocalDate releaseDate) {
-        this.releaseDate = releaseDate;
-    }
+    public void setReleaseDate(LocalDate releaseDate) { this.releaseDate = releaseDate; }
 
     public LocalDateTime getRegistrationDate() {
         return registrationDate;

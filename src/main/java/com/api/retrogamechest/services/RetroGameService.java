@@ -12,6 +12,6 @@ public interface RetroGameService {
 
     RetroGameModel save(RetroGameModel retroGameModel);
     Optional<RetroGameModel> findById(UUID retroGameId);
-    Page<RetroGameModel> findAll(Pageable pageable);
+    List<RetroGameModel> findAll();
     void delete(UUID retroGameId);
 }

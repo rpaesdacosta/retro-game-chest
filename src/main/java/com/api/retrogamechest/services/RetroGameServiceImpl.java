@@ -4,6 +4,7 @@ import com.api.retrogamechest.models.RetroGameModel;
 import com.api.retrogamechest.repositories.RetroGameRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -32,8 +33,8 @@ public class RetroGameServiceImpl implements RetroGameService {
     }
 
     @Override
-    public Page<RetroGameModel> findAll(Pageable pageable) {
-        return retroGameRepository.findAll(pageable);
+    public List<RetroGameModel> findAll() {
+        return retroGameRepository.findAll();
     }
 
     @Override
